@@ -1,6 +1,6 @@
 package com.example.post.service;
 
-import com.example.post.model.User;
+import com.example.post.model.users.User;
 import com.example.post.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -71,5 +71,11 @@ public class UserService {
     public List<User> userList() {
         return userRepository.findAll();
     }
+
+    // username으로 회원 정보 조회
+    public User getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
 
 }

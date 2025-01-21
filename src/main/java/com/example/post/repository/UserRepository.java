@@ -1,11 +1,12 @@
 package com.example.post.repository;
 
-import com.example.post.model.User;
+import com.example.post.model.users.User;
 import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
 @Repository
+// interface로 변경해보길
 public class UserRepository {
     private static Long sequence =0L;
     private final Map<Long, User> store = new HashMap<>();
@@ -27,5 +28,14 @@ public class UserRepository {
     // 모든 User 조회
     public List<User> findAll() {
         return new ArrayList<>(store.values());
+    }
+
+    // username으로 User 정보 조회
+    public User findByUsername(String username) {
+        for (User user : store.values()) {
+            if (user.getUsername().equals(username)) {
+                return user;
+            }
+        } return null;
     }
 }

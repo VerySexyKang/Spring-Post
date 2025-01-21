@@ -1,13 +1,11 @@
 package com.example.post.service;
 
-import com.example.post.model.Post;
+import com.example.post.model.posts.Post;
 import com.example.post.repository.PostRepository;
-import com.example.post.repository.PostRepositoryImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor

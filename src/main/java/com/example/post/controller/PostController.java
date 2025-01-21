@@ -1,6 +1,6 @@
 package com.example.post.controller;
 
-import com.example.post.model.Post;
+import com.example.post.model.posts.Post;
 import com.example.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

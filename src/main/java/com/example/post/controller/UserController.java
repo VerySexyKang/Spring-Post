@@ -1,15 +1,14 @@
 package com.example.post.controller;
 
 
-import com.example.post.model.User;
+import com.example.post.model.users.User;
 import com.example.post.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Slf4j
 @Controller
@@ -20,20 +19,20 @@ public class UserController {
     private final UserService userService;
 
     // 회원가입 페이지 요청 처리
-    @GetMapping(path = "register")
+    @GetMapping(path = "users/register")
     public String register() {
-        return "register";
+        return "users/register";
     }
 
     // 이름 이메일 입력 후 가입하기를 클릭하면 상뇽자가 입력한 이름과 이메일을 스프링에서 로그로 출력
-//    @PostMapping(path = "register_v3")
-//    public String register_V3(@RequestParam (name = "name") String name,
-//                              @RequestParam (name = "email") String email) {
-//
-//        log.info("param name: {}", name);
-//        log.info("param {}",  email);
-//        return "register_success";
-//    }
+/*    @PostMapping(path = "register_v3")
+*    public String register_V3(@RequestParam (name = "name") String name,
+*                              @RequestParam (name = "email") String email) {
+*
+*        log.info("param name: {}", name);
+*        log.info("param {}",  email);
+*        return "register_success";
+ */
 
     /**
      * 컨트롤러의 역할
@@ -46,57 +45,70 @@ public class UserController {
      * 레이어는 컨트롤러, 서비스, 레퍼지토리의 3가지 레이어로 작업
      * 회원가입 요청 처리
      */
-    @PostMapping(path = "register")
+    @PostMapping(path = "users/register")
     public String register_V3(@ModelAttribute User user) {
         log.info("user: {}", user);
         User registedUser = userService.registerUser(user);
         log.info("registedUser: {}", registedUser);
 
-        return "register_success";
+        return "index";
     }
 
-    // 아이디로 회원 정보 조회 ex) /user-details/{사용자ID(path value)}
-    // 사용자ID로 조회 후 리턴을 user_detail.html을 보여준다
-    // 타임리프 user_detail에 적용
-//    @GetMapping(path = "/user-details/{id}")
-//    public String findUserId(@PathVariable (name = "id") Long id, Model model) {
-//        User getUser = userService.getUserById(id);
-//        if(getUser != null) {
-//            model.addAttribute("id", getUser.getId());
-//            model.addAttribute("name", getUser.getName());
-//            model.addAttribute("email", getUser.getEmail());
-//        }
-//        return "user_detail";
-//    }
+    // 로그인 페이지 이동
+    @GetMapping("users/login")
+    public String login() {
+        return "users/login";
+    }
 
-    // 그냥 URL로 요청하는 것이니 GetMapping
-    // 변경 같은 거는 PosstMapping
-    @GetMapping(path = "user-detail/{id}")
-    // PathVariable 페러미터 안에 name은 경로변수 중괄호 안의 이름과 같아야함
-    public String userDetails(@PathVariable(name = "id") Long id, Model model) {
+    // 로그인
+    // HttpServletRequest
+    @PostMapping("users/login")
+    public String login(@ModelAttribute User user,
+                        HttpServletRequest request) {
+        log.info("username: {}", user);
 
-        // User타입인 이유 = 무조건 user로 service에서 넘어옴
-        User user = userService.getUserById(id);
-        // 검색한 User정보를 Model에 담는다
-        model.addAttribute("user", user);
+        // username에 해당하는 User 객체를 찾는다
+        User findUser = userService.getUserById(user.getId());
+        log.info("findUser: {}", findUser);
 
-        return "user_detail";
+        // 사용자가 입력한 username, password 정보가 데이터베이스의 User 정보와 일치하는지 확인
+        if (findUser == null || !findUser.getPassword().equals(user.getPassword())) {
+            // 로그인 실패
+            return "redirect:/users/login";
+        }
+
+        // Request 객체에 저장돼 있는 Session 객체를 받아온다.
+        HttpSession session = request.getSession();
+        // 세션에 로그인 정보 저장
+        session.setAttribute("loginUser", findUser);
+        
+        return "redirect:/";
+    }
+
+    // 로그아웃
+    @GetMapping("/users/logout")
+    // HttpSession으로 session을 그냥 받아올 수 있음
+    public String logout(HttpSession session) {
+        // session.setAttribute("loginUser", null);
+        // 세션의 데이터를 모두 삭제
+        session.invalidate();
+        return "redirect:/";
+    }
+
+    // 세선 저장 확인
+    @ResponseBody
+    @GetMapping("loginCheck")
+    public String loginCheck(HttpServletRequest request) {
+        // Requesst 객체에 저장돼 있는 Session 객체를 받아온다.
+        HttpSession session = request.getSession();
+        // session에 저장된 loginUsername 정보를 찾는다.
+        String loginUsername = (String)session.getAttribute("loginUsername");
+        log.info("loginUsername: {}", loginUsername);
+
+        return "ok";
     }
 
 
-    // 회원목록보기 >> 유저 이름을 클릭하면 회원 상세정보 보기
-    @GetMapping("user-list")
-    public String userList(Model model) {
-        List<User> allList = userService.getAllUsers();
-        model.addAttribute("users", allList);
-        return "user_list";
-    }
 
-//    @GetMapping("user-list")
-//    public String userList(Model model) {
-//        model.addAttribute("users", userService.getAllUsers());
-//
-//        return "user_list";
-//    }
-    
+
 }
