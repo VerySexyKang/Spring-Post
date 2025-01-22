@@ -30,7 +30,7 @@
         <tr th:each="post, postStat : ${posts}">
             <td th:text="${postStat.count}">1</td>
             <td><a th:href="@{/posts/{id}(id=${post.id})}" th:text="${post.title}">제목</a></td>
-            <td>[[${post.username}]]</td>
+            <td>[[${post.user.name}]]</td>
             <td>[[${post.views}]]</td>
             <td>[[${#temporals.format(post.createTime, 'yyyy-MM-dd')}]]</td>
         </tr>

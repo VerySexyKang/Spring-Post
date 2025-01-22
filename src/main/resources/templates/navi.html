@@ -13,6 +13,7 @@
           <a class="nav-link" href="/posts/create">글쓰기</a>
         </li>
         <!-- 로그인과 회원가입 메뉴 -->
+        <th:block th:unless="${session.loginUser}">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="loginDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             로그인
@@ -22,9 +23,10 @@
             <li><a class="dropdown-item" href="/users/register">회원가입</a></li>
           </ul>
         </li>
+        </th:block>
         <!-- 로그아웃 -->
         <!--로그인과 로그아웃 상태에 따라 메뉴, 메인에 이름 뜨는지 바뀌도록-->
-        <li class="nav-item dropdown">
+        <li class="nav-item dropdown" th:if="${session.loginUser}">
           <a class="nav-link dropdown-toggle" href="#" id="loginDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             로그아웃
           </a>

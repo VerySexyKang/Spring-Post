@@ -60,28 +60,26 @@ public class UserController {
         return "users/login";
     }
 
-    // 로그인
-    // HttpServletRequest
     @PostMapping("users/login")
-    public String login(@ModelAttribute User user,
-                        HttpServletRequest request) {
-        log.info("username: {}", user);
+    public String login(
+            @ModelAttribute User user,
+            HttpServletRequest request) {
+        log.info("user: {}", user);
 
-        // username에 해당하는 User 객체를 찾는다
-        User findUser = userService.getUserById(user.getId());
+        // username에 해당하는 User 객체를 찾는다.
+        User findUser = userService.getUserByUsername(user.getUsername());
         log.info("findUser: {}", findUser);
 
-        // 사용자가 입력한 username, password 정보가 데이터베이스의 User 정보와 일치하는지 확인
+        // 사용자가 입력한 username, password 정보가 데이터베이스의User 정보와 일치하는지 확인
         if (findUser == null || !findUser.getPassword().equals(user.getPassword())) {
-            // 로그인 실패
             return "redirect:/users/login";
         }
 
         // Request 객체에 저장돼 있는 Session 객체를 받아온다.
         HttpSession session = request.getSession();
-        // 세션에 로그인 정보 저장
+        // session 에 로그인 정보를 저장한다.
         session.setAttribute("loginUser", findUser);
-        
+
         return "redirect:/";
     }
 

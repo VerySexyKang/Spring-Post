@@ -36,13 +36,9 @@ public class PostService {
     }
 
     // 글 삭제
-    public void removePost(Long postId, String password) {
+    public void removePost(Long postId) {
         // 글을 repo에서 읽어옴. 조회
-        Post findPost = postRepository.findPostById(postId);
-        if (findPost != null && findPost.getPassword().equals(password)) {
-            postRepository.deletePost(postId);
-        }
-
+//        Post findPost = postRepository.findPostById(postId);
+        postRepository.deletePost(postId);
     }
-
 }
