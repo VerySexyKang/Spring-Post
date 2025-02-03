@@ -16,6 +16,12 @@ public class UserService {
      * 1. 필드 주입
      * 2. 생성자 주입
      * 3. 세터 주입
+     *
+     *  Spring Data Jpa의 CRUD (Create Read Update Delete)
+     *  Create : save(엔티티 객체)
+     *  Read : findById(엔티티 객체의 아이디), findAll() 파라미터 없음
+     *  Update : 없음 (영속성 컨텍스트에서 변경감지를 통해 업데이트 하기 때문)
+     *  Delete : delete(엔티티 객체)
      */
     // 유저가 생성하지 않음. new 써서 하는 그거
     // @Autowired를 어디에 주느냐에 따라 달라짐
@@ -42,14 +48,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-//    public User getUserById(Long id) {
-//        Optional<User> user = userRepository.findById(id);
-//        // user에 값이 있는지 확인. Optional에서만 쓸 수 있음
-//        if(user.isPresent()) {
-//            return user.get();
-//        }
-//        return null;
-//    }
+/*    public User getUserById(Long id) {
+*        Optional<User> user = userRepository.findById(id);
+*        // user에 값이 있는지 확인. Optional에서만 쓸 수 있음
+*        if(user.isPresent()) {
+*            return user.get();
+*        }
+*        return null;
+*    }
+*
+ */
 
     // ID로 사용자 조회
     public User getUserById(Long id) {

@@ -3,7 +3,6 @@ package com.example.post.controller;
 import com.example.post.model.posts.Post;
 import com.example.post.model.users.User;
 import com.example.post.service.PostService;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -50,7 +49,15 @@ public class PostController {
     /* 게시글 등록과 Mapping값이 똑같으나 되는 이유
     등록은 Post방식 조회는 Get방식이라 가능. 방식이 다르면 됨 */
     @GetMapping("posts")
-    public String listPosts(Model model) {
+    public String listPosts(
+            @SessionAttribute(name = "loginUser", required = false) User loginUser,
+            Model model) {
+
+        //로그인하지 않았음
+        if (loginUser == null) {
+            return "redirect:/users/login";
+        }
+
         List<Post> posts = postService.findAllPosts();
         model.addAttribute("posts", posts);
 
@@ -81,4 +88,30 @@ public class PostController {
         return "redirect:/posts";
     }
 
+    // 수정하기 이동
+    @GetMapping("posts/edit/{postId}")
+    public String editPostForm(Model model,
+                               @PathVariable(name = "postId") Long postId) {
+        model.addAttribute("post", postService.findPostById(postId));
+        return "posts/edit";
+    }
+
+    // 게시글 수정
+    @PostMapping("posts/edit/{postId}")
+    public String editPost(@SessionAttribute(name = "loginUser") User loginUser,
+                           @PathVariable(name = "postId") Long postId,
+                           @ModelAttribute Post updatePost) {
+        log.info("updatePost: {}", updatePost);
+
+        // 수정하려는 게시글이 존재하고 로그인 사용자와 게시글의 작성자가 같은지 확인
+        Post postById = postService.findPostById(postId);
+        if (postById.getUser().getId() == loginUser.getId()) {
+            postService.updatePost(updatePost, postId);
+        }
+
+        return "redirect:/posts";
+    }
+
 }
+
+

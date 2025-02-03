@@ -2,12 +2,17 @@ package com.example.post.controller;
 
 
 import com.example.post.model.users.User;
+import com.example.post.model.users.UserCreateDto;
+import com.example.post.model.users.UserLoginDto;
 import com.example.post.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -20,19 +25,20 @@ public class UserController {
 
     // 회원가입 페이지 요청 처리
     @GetMapping(path = "users/register")
-    public String register() {
+    public String register(Model model) {
+        model.addAttribute("userCreateDto", new UserCreateDto());
         return "users/register";
     }
 
     // 이름 이메일 입력 후 가입하기를 클릭하면 상뇽자가 입력한 이름과 이메일을 스프링에서 로그로 출력
-/*    @PostMapping(path = "register_v3")
-*    public String register_V3(@RequestParam (name = "name") String name,
-*                              @RequestParam (name = "email") String email) {
-*
-*        log.info("param name: {}", name);
-*        log.info("param {}",  email);
-*        return "register_success";
- */
+    /*    @PostMapping(path = "register_v3")
+     *    public String register_V3(@RequestParam (name = "name") String name,
+     *                              @RequestParam (name = "email") String email) {
+     *
+     *        log.info("param name: {}", name);
+     *        log.info("param {}",  email);
+     *        return "register_success";
+     */
 
     /**
      * 컨트롤러의 역할
@@ -45,34 +51,60 @@ public class UserController {
      * 레이어는 컨트롤러, 서비스, 레퍼지토리의 3가지 레이어로 작업
      * 회원가입 요청 처리
      */
+    // 회원가입 요청처리
+    // ModelAttribute는 자동으로 Model에 담음. 아래 같은 경우는 userCreateDto에 자동으로 담음.
     @PostMapping(path = "users/register")
-    public String register_V3(@ModelAttribute User user) {
-        log.info("user: {}", user);
-        User registedUser = userService.registerUser(user);
-        log.info("registedUser: {}", registedUser);
+    public String register_V3(@Validated @ModelAttribute UserCreateDto userCreateDto,
+                              BindingResult bindingResult) {
+        // 유효성 검증이 실패했는지 확인
+        // validation에 실패한 값이 bindingResult에 들어있음
+        if (bindingResult.hasErrors()) {
+            log.info("유효성 검증 실패");
+            return "users/register";
+        }
 
-        return "index";
+        // username(ID) 중복 확인
+        if(userService.getUserByUsername(userCreateDto.getUsername()) != null) {
+            // 이미 사용중인 username이 존재한다.
+            // 에러코드는 errors.properties 파일에 정의된 에러 코드와 메시지를 사용한다.
+            bindingResult.reject("duplicate.username");
+            return "users/register";
+        }
+
+        log.info("user: {}", userCreateDto);
+//        User registedUser = userService.registerUser(user);
+//        log.info("registedUser: {}", registedUser);
+
+        return "redirect:/";
     }
 
     // 로그인 페이지 이동
     @GetMapping("users/login")
-    public String login() {
+    public String login(Model model) {
+        model.addAttribute("userLoginDto", new UserLoginDto());
         return "users/login";
     }
 
+    // 로그인
     @PostMapping("users/login")
     public String login(
-            @ModelAttribute User user,
+            @Validated @ModelAttribute UserLoginDto userLoginDto,
+            BindingResult bindingResult,
             HttpServletRequest request) {
-        log.info("user: {}", user);
+        // 로그인 정보 검증에 실패하면 로그인 페이지로 돌아간다.
+        if (bindingResult.hasErrors()){
+            return "users/login";
+        }
+        log.info("user: {}", userLoginDto);
 
         // username에 해당하는 User 객체를 찾는다.
-        User findUser = userService.getUserByUsername(user.getUsername());
+        User findUser = userService.getUserByUsername(userLoginDto.getUsername());
         log.info("findUser: {}", findUser);
 
         // 사용자가 입력한 username, password 정보가 데이터베이스의User 정보와 일치하는지 확인
-        if (findUser == null || !findUser.getPassword().equals(user.getPassword())) {
-            return "redirect:/users/login";
+        if (findUser == null || !findUser.getPassword().equals(userLoginDto.getPassword())) {
+            bindingResult.reject("loginFailed", "아이디또는 패스워드가 다릅니다.");
+            return "/users/login";
         }
 
         // Request 객체에 저장돼 있는 Session 객체를 받아온다.
@@ -100,13 +132,11 @@ public class UserController {
         // Requesst 객체에 저장돼 있는 Session 객체를 받아온다.
         HttpSession session = request.getSession();
         // session에 저장된 loginUsername 정보를 찾는다.
-        String loginUsername = (String)session.getAttribute("loginUsername");
+        String loginUsername = (String) session.getAttribute("loginUsername");
         log.info("loginUsername: {}", loginUsername);
 
         return "ok";
     }
-
-
 
 
 }

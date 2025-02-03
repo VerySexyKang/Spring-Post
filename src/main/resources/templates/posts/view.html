@@ -7,8 +7,8 @@
     <!-- Bootstrap CSS 추가 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
-        function confirmDelete(postId){
-            if(confirm("정말 삭제하시겠습니까?")) {
+        function confirmDelete(postId) {
+            if (confirm("정말 삭제하시겠습니까?")) {
                 location.href = '/posts/remove/' + postId
             }
         }
@@ -22,19 +22,19 @@
     <h2>게시글 읽기</h2>
 
     <!-- 게시글 상세 내용 -->
-    <div class="card">
+    <div class="card" th:object="${post}"}>
         <div class="card-header">
             <!-- 게시글 제목 -->
-             <h3 th:text="${post.title}">제목</h3>
+            <h3 th:text="*{title}">제목</h3>
         </div>
         <div class="card-body">
             <!-- 게시글 내용 -->
-             <p th:text="${post.content}">내용</p>
+            <p th:text="*{content}">내용</p>
         </div>
         <div class="card-footer text-muted">
             <!-- 게시글 작성자, 조회수, 등록일 -->
-            <span>작성자: [[${post.user.name}]]</span> |
-            <span>조회 수: [[${post.views}]]</span> |
+            <span>작성자: [[*{user.name}]]</span> |
+            <span>조회 수: [[*{views}]]</span> |
             <span>작성일: [[${#temporals.format(post.createTime, 'yyyy-MM-dd')}]]</span>
         </div>
     </div>
@@ -42,7 +42,10 @@
     <!-- 로그인 사용자와 작성자가 같을 경우에만 수정, 삭제 버튼이 보여야 한다 -->
     <!-- class를 두개 이상 지정할 경우 중간에 공백 -->
     <th:block th:if="${session.loginUser != null and session.loginUser.id == post.user.id}">
-    <button type="button" class="btn btn-danger" th:onclick="|confirmDelete(${post.id})|">삭제하기</button>
+        <!-- 수정하기 -->
+        <a th:href="@{/posts/edit/{postId}(postId=${post.id})}" class="btn btn-primary mt-3"> 수정하기</a>
+        <!--삭제하기-->
+        <button type="button" class="btn btn-danger mt-3" th:onclick="|confirmDelete(${post.id})|">삭제하기</button>
     </th:block>
     <!-- 뒤로 가기 버튼 -->
     <a href="/posts" class="btn btn-secondary mt-3">목록으로 돌아가기</a>
