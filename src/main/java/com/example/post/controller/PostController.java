@@ -24,10 +24,10 @@ public class PostController {
             @SessionAttribute(name = "loginUser", required = false) User loginUser) {
         // 사용자가 로그인을 했는지 체크
         log.info("loginUser: {}", loginUser);
-        //로그인을 하지 않았으면 로그인 페이지로 리다이렉트
-        if (loginUser == null) {
-            return "redirect:/users/login";
-        }
+//        //로그인을 하지 않았으면 로그인 페이지로 리다이렉트
+//        if (loginUser == null) {
+//            return "redirect:/users/login";
+//        }
         // 게시글 작성 페이지 뷰 이름 return
         return "posts/create";
     }
@@ -52,11 +52,11 @@ public class PostController {
     public String listPosts(
             @SessionAttribute(name = "loginUser", required = false) User loginUser,
             Model model) {
-
-        //로그인하지 않았음
-        if (loginUser == null) {
-            return "redirect:/users/login";
-        }
+//
+//        //로그인하지 않았음
+//        if (loginUser == null) {
+//            return "redirect:/users/login";
+//        }
 
         List<Post> posts = postService.findAllPosts();
         model.addAttribute("posts", posts);

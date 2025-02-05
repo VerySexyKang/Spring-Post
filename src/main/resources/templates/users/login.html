@@ -15,7 +15,7 @@
     <h2>로그인</h2>
 
     <!-- 로그인 폼 -->
-    <form action="/users/login" method="post" th:object="${userLoginDto}">
+    <form action="" method="post" th:object="${userLoginDto}">
         <!-- 로그인 실패시 에러메세지 출력-->
         <th:block th:if="${#fields.hasGlobalErrors()}">
             <div class="alert alert-danger" th:each="err : ${#fields.globalErrors()}"
