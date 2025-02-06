@@ -5,16 +5,23 @@ import com.example.post.model.users.User;
 import com.example.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Controller
 public class PostController {
+
+    @Value("${file.upload.path}")
+    private String uploadPath;  // 파일 업로드 경로
     private final PostService postService;
 
     // 게시글 작성 페이지 이동
@@ -35,13 +42,21 @@ public class PostController {
     // 게시글 등록
     @PostMapping("posts")
     public String savePost(@ModelAttribute Post post,
-                           @SessionAttribute(name = "loginUser") User loginUser) {
+                           @SessionAttribute(name = "loginUser") User loginUser,
+                           @RequestParam(name = "file", required = false) MultipartFile file) throws IOException {
+
+        log.info("file: {}", file.getOriginalFilename());
+        log.info("file: {}", file.getSize());
+//        String uploadPath = "c:/Dev/uploads/";
+//        // 파일을 업로드 경로에 저장
+//        file.transferTo(new File(uploadPath + file.getOriginalFilename()));
+
         log.info("Post created: {}", post);
         // 세션에서 사용자 정보를 가져와서 Post 객체에 넣어준다.
         post.setUser(loginUser);
 
-        Post savedPost = postService.savePost(post);
-        log.info("Post saved: {}", savedPost);
+//        Post savedPost = postService.savePost(post);
+//        log.info("Post saved: {}", savedPost);
         return "redirect:/posts";
     }
 

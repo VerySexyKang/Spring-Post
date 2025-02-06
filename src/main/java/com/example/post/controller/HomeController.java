@@ -11,7 +11,7 @@ public class HomeController {
     @GetMapping("/")
     public String home() {
         log.info("home controller");
-
-        return"index";
+//        throw new RuntimeException("강제로 발생시킨 예외");
+        return "index";
     }
 }

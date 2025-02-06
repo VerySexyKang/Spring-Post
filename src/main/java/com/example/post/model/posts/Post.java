@@ -25,6 +25,9 @@ public class Post {
     private int views;                  // 조회수
     private LocalDateTime createTime;   // 작성일
 
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = false)        // mappedBy는 연관관계 주인의 필드명을 적는 것
+    private FileAttachment fileAttachment;
+
     // 조회수 증가
     public void incrementViews() {
         this.views++;

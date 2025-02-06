@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -82,7 +83,11 @@ public class UserService {
 
     // username으로 회원 정보 조회
     public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new NoSuchElementException("사용자가 존재하지 않습니다.");
+        }
+        return user;
     }
 
 
