@@ -145,7 +145,7 @@ public class PostController {
         }
         // 첨부파일이 저장된 전체 경로값을 만든다.
         String fullPath = uploadPath + "/" + post.getFileAttachment().getStoredFilename();
-        UrlResource resource = new UrlResource("file :" + fullPath);
+        UrlResource resource = new UrlResource("file:" + fullPath);
         // 다운로드 되는 파일의 이름을 지정한다.
         String encodedFilename = UriUtils.encode(post.getFileAttachment().getOriginalFilename(), StandardCharsets.UTF_8);
 
