@@ -6,13 +6,19 @@ import com.example.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -55,8 +61,8 @@ public class PostController {
         // 세션에서 사용자 정보를 가져와서 Post 객체에 넣어준다.
         post.setUser(loginUser);
 
-//        Post savedPost = postService.savePost(post);
-//        log.info("Post saved: {}", savedPost);
+        Post savedPost = postService.savePost(post, file);
+        log.info("Post saved: {}", savedPost);
         return "redirect:/posts";
     }
 
@@ -126,6 +132,31 @@ public class PostController {
 
         return "redirect:/posts";
     }
+
+    // 파일 다운로드 요청 메서드
+    @GetMapping("posts/{postId}/download/{fileAttachmentId}")
+    public ResponseEntity<Resource> download(
+            @PathVariable(name = "postId") Long postId,
+            @PathVariable(name = "fileAttachmentId") Long fileAttachmentId
+    ) throws MalformedURLException {
+        Post post = postService.findPostById(postId);
+        if (post.getFileAttachment() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        // 첨부파일이 저장된 전체 경로값을 만든다.
+        String fullPath = uploadPath + "/" + post.getFileAttachment().getStoredFilename();
+        UrlResource resource = new UrlResource("file :" + fullPath);
+        // 다운로드 되는 파일의 이름을 지정한다.
+        String encodedFilename = UriUtils.encode(post.getFileAttachment().getOriginalFilename(), StandardCharsets.UTF_8);
+
+        String contentDisposition = "attachment; filename=\"" + encodedFilename + "\"";
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", contentDisposition)
+                .body(resource);
+
+    }
+
 
 }
 

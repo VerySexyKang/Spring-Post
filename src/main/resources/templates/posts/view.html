@@ -22,7 +22,7 @@
     <h2>게시글 읽기</h2>
 
     <!-- 게시글 상세 내용 -->
-    <div class="card" th:object="${post}"}>
+    <div class="card" th:object="${post}" }>
         <div class="card-header">
             <!-- 게시글 제목 -->
             <h3 th:text="*{title}">제목</h3>
@@ -30,6 +30,17 @@
         <div class="card-body">
             <!-- 게시글 내용 -->
             <p th:text="*{content}">내용</p>
+        </div>
+        <!-- 첨부파일이 있을 경우 표시 -->
+        <div class="mb-4">
+            <label class="form-label">첨부파일</label>
+            <ul>
+                <li th:if="${post.fileAttachment}">
+                    <a th:href="@{/posts/{postId}/download/{fileAttachmentId}
+        			(postId=${post.id}, fileAttachmentId=${post.fileAttachment.id})}"
+                       th:text="${post.fileAttachment.originalFilename}"></a>
+                </li>
+            </ul>
         </div>
         <div class="card-footer text-muted">
             <!-- 게시글 작성자, 조회수, 등록일 -->
@@ -42,9 +53,9 @@
     <!-- 로그인 사용자와 작성자가 같을 경우에만 수정, 삭제 버튼이 보여야 한다 -->
     <!-- class를 두개 이상 지정할 경우 중간에 공백 -->
     <th:block th:if="${session.loginUser != null and session.loginUser.id == post.user.id}">
-        <!-- 수정하기 -->
+        <!-- 수정하기 버튼 -->
         <a th:href="@{/posts/edit/{postId}(postId=${post.id})}" class="btn btn-primary mt-3"> 수정하기</a>
-        <!--삭제하기-->
+        <!--삭제하기 버튼-->
         <button type="button" class="btn btn-danger mt-3" th:onclick="|confirmDelete(${post.id})|">삭제하기</button>
     </th:block>
     <!-- 뒤로 가기 버튼 -->
