@@ -3,11 +3,13 @@ package com.example.post.controller;
 import com.example.post.model.posts.Post;
 import com.example.post.model.users.User;
 import com.example.post.service.PostService;
+import com.example.post.util.PageNavigator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,6 +31,14 @@ public class PostController {
     @Value("${file.upload.path}")
     private String uploadPath;  // 파일 업로드 경로
     private final PostService postService;
+
+    // 한 페이지당 보여줄 게시글의 수
+    @Value("${page.countPerPage}")
+    private int countPerPage;
+
+    // 한 그룹당 보여줄 페이지의 수
+    @Value("${page.pagePerGroup}")
+    private int pagePerGroup;
 
     // 게시글 작성 페이지 이동
     @GetMapping("posts/create")
@@ -72,6 +82,7 @@ public class PostController {
     @GetMapping("posts")
     public String listPosts(
             @SessionAttribute(name = "loginUser", required = false) User loginUser,
+            @RequestParam(name = "page", defaultValue = "0") int page,
             Model model) {
 //
 //        //로그인하지 않았음
@@ -79,8 +90,17 @@ public class PostController {
 //            return "redirect:/users/login";
 //        }
 
-        List<Post> posts = postService.findAllPosts();
+        if (page < 0)
+        {
+            page = 0;
+        }
+        // 파라미터 안의 페이지 부분은 사용자가 지정하는 것
+        Page<Post> posts = postService.findAllPosts(page, countPerPage);
+        PageNavigator navi = new PageNavigator(countPerPage, pagePerGroup, posts.getTotalPages(),
+                posts.getNumber(), posts.getTotalElements());
+
         model.addAttribute("posts", posts);
+        model.addAttribute("navi", navi);
 
         return "posts/list";
     }

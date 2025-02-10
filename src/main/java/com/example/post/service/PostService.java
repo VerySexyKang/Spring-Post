@@ -7,6 +7,9 @@ import com.example.post.util.FileAttachmentUtil;
 import jakarta.persistence.EntityTransaction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,8 +52,11 @@ public class PostService {
     }
 
     // 글 전체 조회
-    public List<Post> findAllPosts() {
-        return postRepository.findAll();
+    public Page<Post> findAllPosts(int page, int size) {
+//      return postRepository.findAll();
+//      return postRepository.findAllPosts();
+        Pageable pageable = PageRequest.of(page, size);
+        return postRepository.findAllByOrderByCreateTimeDesc(pageable);
     }
 
     // 아이디로 글 조회
@@ -92,7 +98,7 @@ public class PostService {
             post.setContent(updatePost.getContent());
         }
 
-        }
-
     }
+
+}
 

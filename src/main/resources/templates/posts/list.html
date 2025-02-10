@@ -36,6 +36,33 @@
         </tr>
         </tbody>
     </table>
+
+    <!-- 페이징 처리 -->
+    <nav>
+        <ul class="pagination justify-content-center">
+            <!-- 이전 그룹으로 -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{/posts(page=${navi.currentPage - navi.pagePerGroup})}"><<</a>
+            </li>
+            <!-- 이전 페이지로 -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{/posts(page=${navi.startPageGroup - 1})}">이전</a>
+            </li>
+            <!-- 현재 페이지 -->
+            <li class="page-item" th:each="pageNum:${#numbers.sequence(navi.startPageGroup, navi.endPageGroup)}">
+                <a class="page-link" th:href="@{/posts(page=${pageNum})}" th:text="${pageNum + 1}">1</a>
+            </li>
+            <!-- 다음 페이지로 -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{/posts(page=${navi.startPageGroup + 1})}">다음</a>
+            </li>
+            <!-- 다음 그룹으로 -->
+            <li class="page-item">
+                <a class="page-link" th:href="@{/posts(page=${navi.currentPage + navi.pagePerGroup})}">>></a>
+            </li>
+        </ul>
+    </nav>
+    <!-- 페이지 처리 -->
 </div>
 
 <!-- Bootstrap JS 및 의존성 스크립트 추가 -->
