@@ -41,20 +41,20 @@ public class WebConfig implements WebMvcConfigurer {
         return filterRegistrationBean;
     }
 
-    // 인터셉터 등록
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-////        registry.addInterceptor(new LogInterceptor())
-////                // 인터셉터의 실행 순서 지정
-////                .order(1)
-////                // 인터셉터를 적용할 URL 패턴
-////                .addPathPatterns("/**");
-//
-//        registry.addInterceptor(new LoginCheckInterceptor())
-//                .order(2)
-//                .addPathPatterns("/**")
-//                // 제외할 경로 지정 (excludePathPatterns)
-//                .excludePathPatterns("/", "/users/register", "/users/login", "/users/logout");
-//    }
+     // 인터셉터 등록
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(new LogInterceptor())
+//                // 인터셉터의 실행 순서 지정
+//                .order(1)
+//                // 인터셉터를 적용할 URL 패턴
+//                .addPathPatterns("/**");
+
+        registry.addInterceptor(new LoginCheckInterceptor())
+                .order(2)
+                .addPathPatterns("/**")
+                // 제외할 경로 지정 (excludePathPatterns)
+                .excludePathPatterns("/", "/users/register", "/users/login", "/users/logout", "/api/**");
+    }
 
 }
