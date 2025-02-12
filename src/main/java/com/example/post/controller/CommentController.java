@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -63,8 +64,17 @@ public class CommentController {
 
     // 댓글 조회(GET)
     @GetMapping("posts/{postId}/comments")
-    public ResponseEntity<List<Comment>> getComments() {
-        return ResponseEntity.ok(null);
+    public ResponseEntity<List<CommentResponseDto>> getComments(
+            @PathVariable(name = "postId") Long postId) {
+        List<Comment> comments = commentService.getCommentsByPostId(postId);
+
+        List<CommentResponseDto> commentResponseDtos = new ArrayList<>();
+
+        for (Comment comment : comments) {
+            commentResponseDtos.add(comment.toResponseDto());
+        }
+
+        return ResponseEntity.ok(commentResponseDtos);
     }
 
     // 댓글 수정(PUT or PATCH)

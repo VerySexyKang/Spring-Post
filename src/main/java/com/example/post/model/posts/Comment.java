@@ -34,6 +34,7 @@ public class Comment {
                 .content(this.content)
                 .postId(this.post.getId())
                 .userId(this.user.getId())
+                .username(this.user.getUsername())
                 .build();
     }
 }

@@ -26,7 +26,7 @@ public class CommentService {
     // 댓글 전체 조회
     public List<Comment> getCommentsByPostId(Long postId) {
         // 게시글 ID에 대한 모든 댓글 목록을 조회
-        return null;
+        return commentRepository.findAllByPostId(postId);
     }
 
     // 댓글 조회
